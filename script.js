@@ -153,4 +153,7 @@ function handleScroll() {
 
 // Ad Popup दिखाने का फ़ंक्शन
 function showAdPopup() {
+
     document
+// Ad Popup को शुरुआती लोड पर छिपाने के लिए
+document.getElementById('ad-popup').classList.add('hidden');
