@@ -153,7 +153,21 @@ function handleScroll() {
 
 // Ad Popup दिखाने का फ़ंक्शन
 function showAdPopup() {
+    document.getElementById('ad-popup').classList.remove('hidden');
+    // Ad दिखने पर वर्तमान वीडियो को पॉज करें
+    if (players[currentIndex] && typeof players[currentIndex].pauseVideo === 'function') {
+        players[currentIndex].pauseVideo();
+    }
+}
 
-    document
-// Ad Popup को शुरुआती लोड पर छिपाने के लिए
+// Ad Popup छिपाने का फ़ंक्शन
+function hideAdPopup() {
+    document.getElementById('ad-popup').classList.add('hidden');
+    // Ad बंद होने पर वीडियो फिर से प्ले करें
+    if (players[currentIndex] && typeof players[currentIndex].playVideo === 'function') {
+        players[currentIndex].playVideo();
+    }
+}
+
+// यह लाइन स्क्रिप्ट लोड होते ही Ad Popup को छिपा देती है
 document.getElementById('ad-popup').classList.add('hidden');
