@@ -90,4 +90,8 @@ body {
     line-height: 1;
     text-align: center;
 
+    // Ad Popup को शुरुआती लोड पर छिपाने के लिए
+document.getElementById('ad-popup').classList.add('hidden');
+
     cursor
+
