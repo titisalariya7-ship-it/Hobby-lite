@@ -1,97 +1,263 @@
-body {
-    /* पूरे मोबाइल स्क्रीन को कवर करता है */
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #000; /* ब्लैक बैकग्राउंड */
-    color: white;
-    height: 100vh; 
-    overflow: hidden; /* बाहरी स्क्रॉल बार छिपाएँ */
-    display: flex;
-    flex-direction: column;
+:root {
+    --primary-color: #007bff; /* Primary Blue for buttons */
+    --accent-color: #ffcc00; /* Gold/Yellow for Spark/Rewards */
+    --background-color: #000000;
+    --text-color: #ffffff;
+    --video-bg: #1a1a1a;
+    --modal-bg: #1f1f1f;
 }
 
-/* ---------------------------------------------------- */
-
-/* --- 1. वीडियो फ़ीड (मुख्य स्क्रॉलिंग क्षेत्र) --- */
-
-.video-feed {
-    flex-grow: 1; /* उपलब्ध जगह लेता है */
-    overflow-y: scroll; /* वर्टिकल स्क्रॉलिंग चालू करें */
+/* Base Reset & Full Screen Layout */
+html, body {
     height: 100%;
-    /* Short-style snapping: स्क्रॉल करने पर ठीक अगले वीडियो पर रुकता है */
-    scroll-snap-type: y mandatory; 
-    -webkit-overflow-scrolling: touch; 
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    overflow: hidden; /* Prevent body scroll */
+}
+
+/* Video Feed Container */
+#video-feed {
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    overflow-y: scroll; /* Vertical scrolling enabled */
+    scroll-snap-type: y mandatory; /* Snap to each video */
+    -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
 }
 
 .video-container {
-    height: 100vh; /* प्रत्येक वीडियो पूरी स्क्रीन की ऊँचाई लेता है */
-    width: 100vw;
+    width: 100%;
+    height: 100vh;
     position: relative;
-    scroll-snap-align: start; /* स्नैप पॉइंट */
-    background-color: #121212; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
+    scroll-snap-align: start; /* Snap point */
+    background-color: var(--video-bg);
 }
 
-/* YouTube Iframe Styling */
-.video-container iframe {
+/* YouTube Player */
+.video-container > div[id^="player-"] {
     width: 100%;
-    height: 100%; 
-    border: none;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 5;
 }
 
-/* ---------------------------------------------------- */
-
-/* --- 2. वीडियो ओवरले (टेक्स्ट और बटन) --- */
-
+/* Video Overlay (Text, Buttons) */
 .video-overlay {
     position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    padding-bottom: 80px; /* Space for the bottom nav */
+    pointer-events: none; /* Allows clicks to pass through to the video */
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
+}
+
+/* Right Side Actions (Buttons) */
+.side-buttons {
+    position: absolute;
+    right: 12px;
+    top: 100px; /* Header के नीचे */
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    pointer-events: all; /* Buttons should be clickable */
+}
+
+.side-buttons .button {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.side-buttons .button:active {
+    transform: scale(0.95);
+}
+
+.side-buttons .ad-trigger {
+    background: rgba(255, 204, 0, 0.3);
+    color: var(--accent-color);
+    font-size: 28px;
+}
+
+/* Bottom User Info */
+.video-info {
+    pointer-events: all;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.user-info strong {
+    font-size: 16px;
+}
+
+.user-info .follow-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 4px 16px;
+    border-radius: 9999px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.video-caption {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 4px 0;
+}
+
+.video-music {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+/* Ad Popup Modal */
+.ad-popup-overlay {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10;
-    pointer-events: none; /* क्लिक को वीडियो तक जाने देता है */
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 15px;
+    align-items: center;
+    justify-content: center;
 }
 
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    font-size: 1.1em;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7); /* टेक्स्ट को स्पष्ट बनाता है */
+.ad-popup-overlay.hidden {
+    display: none;
 }
 
-/* Side Buttons (Like, Share, Spark) */
-.side-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* आइकन को केंद्र में लाएं */
-    gap: 30px;
-    position: absolute;
-    right: 15px;
-    bottom: 120px; /* नेविगेशन बार और वीडियो जानकारी से ऊपर */
-}
-
-.side-buttons div {
-    pointer-events: auto; /* बटनों पर क्लिक सक्षम करता है */
-    font-size: 24px;
-    line-height: 1;
+.ad-content-box {
+    width: 340px;
+    max-width: 90%;
+    padding: 24px;
+    background-color: var(--modal-bg);
+    border: 2px solid var(--accent-color);
+    border-radius: 24px;
     text-align: center;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+}
 
-    // Ad Popup को शुरुआती लोड पर छिपाने के लिए
-document.getElementById('ad-popup').classList.add('hidden');
+.ad-message {
+    font-size: 16px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
 
-    cursor
+.ad-message strong {
+    color: var(--accent-color);
+    font-weight: 600;
+}
 
+.ad-button {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.watch-ad-button {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+    transition: background-color 0.2s;
+}
+
+.cancel-ad-button {
+    background-color: #444;
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.ad-placeholder {
+    color: #888;
+    margin: 10px 0;
+    font-size: 12px;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.nav-text {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.nav-item.active .active-icon,
+.nav-item.active .active-text {
+    color: white;
+}
+
+.nav-item .accent-icon,
+.nav-item .accent-text {
+    color: var(--accent-color);
+}
+
+.nav-item .create-plus {
+    width: 28px;
+    height: 20px;
+    border: 2px solid white;
+    border-radius: 4px;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -4px;
+}
