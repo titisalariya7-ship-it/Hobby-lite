@@ -7,7 +7,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 let players = [];
 let currentIndex = 0;
 
-// एक नया वीडियो एलिमेंट और ओवरले बनाता है
+// एक नया वीडियो एलिमेंट और ओवरले बनाता है (नए डिज़ाइन के लिए अपडेटेड)
 function createVideoElement(video) {
     const container = document.createElement('div');
     container.className = 'video-container';
@@ -21,31 +21,22 @@ function createVideoElement(video) {
     const overlay = document.createElement('div');
     overlay.className = 'video-overlay';
     
-    // टॉप बार (For You)
-    overlay.innerHTML += `
-        <div class="top-bar">
-            <span class="back"><span style="font-size: 2rem;">&lt;</span> For You</span>
-            <span class="menu"><span style="font-size: 2rem;">&#8942;</span></span>
-        </div>
-    `;
-
-    // साइड बटन्स (लाइक, शेयर, स्पार्क)
+    // राइट साइड एक्शन्स
     overlay.innerHTML += `
         <div class="side-buttons">
-            <div class="button like">❤️</div>
-            <div class="button comment">💬</div>
-            <div class="button share">↗️</div>
-            <div class="button ad-trigger" title="Spark">⚡</div>
+            <button class="button like">❤️</button>
+            <button class="button comment">💬</button>
+            <button class="button share">↗️</button>
+            <button class="button ad-trigger" title="Spark">⚡</button>
         </div>
     `;
 
-    // वीडियो जानकारी
+    // बॉटम यूजर इन्फो
     overlay.innerHTML += `
         <div class="video-info">
             <div class="user-info">
-                <strong><span class="username">${video.username}</span></strong> 
-                <span style="opacity: 0.6;">•</span>
-                <span style="opacity: 0.8; font-weight: 500;">Follow</span>
+                <span class="username"><strong>@${video.username}</strong></span> 
+                <button class="follow-button">Follow</button>
             </div>
             <p class="video-caption">${video.caption}</p>
             <p class="video-music">🎵 ${video.music}</p>
@@ -74,12 +65,12 @@ function onYouTubeIframeAPIReady() {
     // स्क्रॉल इवेंट लिसनर जोड़ें (Lazy Loading के लिए)
     feed.addEventListener('scroll', handleScroll);
     
-    // Ad Popup ट्रिगर जोड़ें
+    // Ad Popup ट्रिगर जोड़ें (दाएँ तरफ़ के बटन)
     document.querySelectorAll('.ad-trigger').forEach(button => {
         button.addEventListener('click', showAdPopup);
     });
     
-    // Ad बंद करने के बटन जोड़ें
+    // Ad बंद करने के बटन जोड़ें (पॉपअप के अंदर)
     document.getElementById('watch-ad-button').addEventListener('click', hideAdPopup);
     document.getElementById('cancel-ad-button').addEventListener('click', hideAdPopup);
     
