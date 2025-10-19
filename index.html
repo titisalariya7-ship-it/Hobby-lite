@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Neon Shorts App</title>
+    <!-- Tailwind CSS CDN को लोड करना -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS for Neon Glow -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a; /* Dark background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ऐप कंटेनर को प्रीमियम फोन फ्रेम जैसा बनाना */
+        #app-container {
+            /* सोने जैसी चमक के लिए शैडो (Simulating Golden Glow) */
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffcc00; /* Gold border */
+        }
+        
+        /* Neon Button Glow */
+        .neon-button {
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF;
+        }
+
+        /* Action Buttons on the side */
+        .action-icon {
+            filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.7)); /* Yellow glow */
+            stroke-width: 2px;
+            transition: transform 0.2s;
+        }
+        .action-icon:hover {
+             transform: scale(1.1);
+        }
+
+        /* Content info glow */
+        .content-info {
+            text-shadow: 0 0 2px #000000;
+        }
+
+        /* Ad Modal glow */
+        #ad-modal-content {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.3);
+            border: 2px solid #00FFFF;
+        }
+
+        /* Iframe to cover the main screen area */
+        #shorts-content {
+            height: calc(100% - 64px); /* Full height minus footer height */
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-indicator" class="text-xl text-gray-400">
+        डेटा लोड हो रहा है...
+    </div>
+
+    <!-- मुख्य ऐप कंटेनर (मोबाइल फ्रेम) -->
+    <div id="app-container" class="hidden w-full max-w-sm h-[750px] bg-black shadow-2xl rounded-[3rem] overflow-hidden border-2 transition-all duration-500 ease-in-out">
+        
+        <!-- टॉप बार (स्टेटस बार और 'For You' टेक्स्ट) -->
+        <header class="h-12 px-4 flex items-center justify-between text-white text-sm bg-black z-10 relative">
+            <span class="font-bold text-lg text-yellow-300">
+                &lt; आपके लिए
+            </span>
+            <div id="user-display" class="text-xs opacity-50"></div>
+        </header>
+
+        <!-- वीडियो और इंटरैक्शन एरिया -->
+        <main id="shorts-content" class="relative bg-black">
+            
+            <!-- YouTube शॉर्ट्स फ्रेम (फुल-स्क्रीन वर्टिकल) -->
+            <iframe id="youtube-iframe"
+                    src="about:blank"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    class="w-full h-full object-cover">
+            </iframe>
+
+            <!-- राइट साइड एक्शन आइकॉन्स (ओवरले) -->
+            <div class="absolute right-3 bottom-1/3 flex flex-col space-y-4 text-white z-20">
+                <!-- Like -->
+                <svg class="action-icon w-8 h-8 text-yellow-300 fill-none stroke-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <!-- Comments -->
+                <svg class="action-icon w-8 h-8 text-cyan-400 fill-none stroke-current" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <!-- Share -->
+                <svg class="action-icon w-8 h-8 text-yellow-300 fill-none stroke-current" viewBox="0 0 24 24"><path d="M18 8l4 4-4 4M14 12H9M8 4l-4 4 4 4"/></svg>
+                <!-- Spark/Gift -->
+                <svg class="action-icon w-8 h-8 text-cyan-400 fill-none stroke-current" viewBox="0 0 24 24"><path d="M13 14h-2V9h2v5zm0 2h-2v2h2v-2zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            </div>
+
+            <!-- कंटेंट क्रिएटर/वीडियो जानकारी (ओवरले) -->
+            <div id="content-info-overlay" class="absolute bottom-4 left-4 right-4 text-white content-info z-20">
+                <p class="font-bold text-lg mb-1">@GrooveMaster47 <span class="text-yellow-300 text-sm font-normal ml-2">फ़ॉलो करें</span></p>
+                <p class="text-sm opacity-80">Breaking it down with some new moves!</p>
+                <p class="text-xs opacity-60">#1 Neon Beats - ElectroFunk Mix</p>
+            </div>
+
+
+            <!-- कस्टम विज्ञापन पॉप-अप (मॉडेल) - Firestore से नियंत्रित -->
+            <div id="ad-modal-container" class="absolute inset-0 bg-black bg-opacity-70 flex justify-center items-center hidden z-30">
+                <div id="ad-modal-content" class="bg-gray-800 p-6 mx-6 rounded-xl text-center max-w-xs transition duration-300">
+                    
+                    <p class="text-sm text-white mb-4">
+                        क्रिएटर को <span class="text-yellow-400 font-bold">Spark</span> देने के लिए एक छोटा **Rewarded Ad** देखें और खुद के लिए बोनस इनाम पाएं!
+                    </p>
+                    
+                    <h3 id="ad-title" class="text-lg font-bold text-cyan-400 mb-4">यहां विज्ञापन शीर्षक आएगा</h3>
+                    
+                    <button id="watch-ad-button" class="w-full bg-cyan-600 text-black py-3 rounded-full font-bold neon-button hover:bg-cyan-500 shadow-lg"
+                            onclick="window.open(adLink.href, '_blank'); toggleAdModal(false);">
+                        विज्ञापन देखें (30s)
+                    </button>
+                    
+                    <button id="cancel-ad-button" class="w-full text-gray-400 mt-2 py-2 rounded-full hover:text-white"
+                            onclick="toggleAdModal(false);">
+                        रद्द करें
+                    </button>
+                    
+                    <!-- Hidden elements for data linking -->
+                    <p id="ad-body" class="hidden"></p>
+                    <a id="ad-link" href="#" target="_blank" class="hidden"></a>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ऐप नेविगेशन बार (फूटर) -->
+        <footer class="absolute bottom-0 w-full h-16 bg-black border-t border-gray-800 flex justify-around items-center rounded-b-[3rem] p-2 shadow-inner z-40">
+            <button class="text-white flex flex-col items-center">
+                <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="text-xs mt-1">होम</span>
+            </button>
+            <button class="text-gray-500 flex flex-col items-center">
+                <svg class="w-6 h-6 fill-none stroke-current neon-button" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-8-3z"/></svg>
+                <span class="text-xs mt-1 neon-button">इनाम</span>
+            </button>
+            <button class="text-white -mt-4 bg-yellow-400 p-3 rounded-full shadow-lg shadow-yellow-600/50">
+                <svg class="w-6 h-6 fill-black" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+            <button class="text-gray-500 flex flex-col items-center">
+                <svg class="w-6 h-6 fill-none stroke-current" viewBox="0 0 24 24"><path d="M16 4h4v4h-4V4zM4 16h4v4H4v-4zM4 4h4v4H4V4zM16 16h4v4h-4v-4z"/></svg>
+                <span class="text-xs mt-1">बनाएं</span>
+            </button>
+            <button class="text-gray-500 flex flex-col items-center">
+                <svg class="w-6 h-6 fill-none stroke-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.9 0 3.5 1.6 3.5 3.5S13.9 12 12 12s-3.5-1.6-3.5-3.5S10.1 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                <span class="text-xs mt-1">प्रोफ़ाइल</span>
+            </button>
+        </footer>
+
+    </div>
+
+    <!-- Firebase SDKs और JavaScript लॉजिक -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- ग्लोबल वैरिएबल (Canvas Environment से) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId = null;
+
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const appContainer = document.getElementById('app-container');
+        const userDisplay = document.getElementById('user-display');
+        const youtubeIframe = document.getElementById('youtube-iframe');
+        
+        const adModalContainer = document.getElementById('ad-modal-container');
+        const adTitleElement = document.getElementById('ad-title');
+        const adBodyElement = document.getElementById('ad-body');
+        const adLinkElement = document.getElementById('ad-link');
+        const watchAdButton = document.getElementById('watch-ad-button');
+
+        // Ad Modal को दिखाने या छिपाने का फ़ंक्शन
+        window.toggleAdModal = (show) => {
+            if (show) {
+                adModalContainer.classList.remove('hidden');
+                // सुनिश्चित करें कि विज्ञापन URL बटन पर सेट है
+                watchAdButton.onclick = () => { 
+                    const link = adLinkElement.href;
+                    if (link && link !== '#') {
+                        window.open(link, '_blank'); 
+                    }
+                    toggleAdModal(false); // Modal बंद करें
+                };
+            } else {
+                adModalContainer.classList.add('hidden');
+            }
+        };
+
+        // UI में एक 'Spark' बटन जोड़ें जो Ad Modal को दिखाए (डेमो के लिए)
+        // Note: यह इमेज के 'Spark' बटन की तरह है
+        const contentInfoOverlay = document.getElementById('content-info-overlay');
+        const sparkButtonHTML = `
+            <div class="absolute right-3 top-1/2 -translate-y-1/2" onclick="toggleAdModal(true);">
+                <svg class="action-icon w-8 h-8 text-yellow-300 fill-none stroke-current cursor-pointer" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-8-3z"/></svg>
+            </div>
+        `;
+        // Ad modal को ट्रिगर करने के लिए एक बटन जोड़ना (जैसे इमेज में Spark/Gift icon)
+        const triggerButtonHTML = `
+            <div class="p-2 text-center mt-4">
+                <button onclick="toggleAdModal(true);" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition">
+                    कस्टम विज्ञापन ट्रिगर करें
+                </button>
+            </div>
+        `;
+        contentInfoOverlay.insertAdjacentHTML('afterend', triggerButtonHTML);
+
+
+        /**
+         * Firestore को इनिशियलाइज़ करता है और ऑथेंटिकेशन संभालता है।
+         */
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userDisplay.textContent = `User: ${userId.substring(0, 8)}...`;
+                        console.log("Firebase Auth Ready. User ID:", userId);
+                        setupRealtimeListener();
+                    } else {
+                        userId = null;
+                        loadingIndicator.textContent = 'Auth failed or signed out.';
+                        console.error("User is signed out.");
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                loadingIndicator.textContent = `त्रुटि: Firebase शुरू नहीं हो सका। ${error.message}`;
+            }
+        }
+
+        /**
+         * YouTube Shorts URL को एम्बेड करने योग्य फॉर्मेट में बदलता है।
+         */
+        function getEmbedUrl(url) {
+            const defaultEmbed = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0"; 
+            let videoId = null;
+
+            if (url.includes("/shorts/")) {
+                const parts = url.split('/shorts/');
+                if (parts.length > 1) {
+                    videoId = parts[1].split(/[?&]/)[0]; 
+                }
+            } 
+            else if (url.includes("youtube.com/watch?v=")) {
+                const urlParams = new URLSearchParams(new URL(url).search);
+                videoId = urlParams.get('v');
+            } 
+            else if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1].split(/[?&]/)[0];
+            } 
+            else if (url.includes("youtube.com/embed/")) {
+                return url; 
+            }
+
+            if (videoId) {
+                // Autoplay, Mute, No Controls: Creates the full-screen short experience
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${videoId}`;
+            }
+
+            return defaultEmbed;
+        }
+
+        /**
+         * Firestore से रियल-टाइम डेटा को सुनता है और UI को अपडेट करता है।
+         */
+        function setupRealtimeListener() {
+            if (!db || !userId) return;
+
+            const configPath = `artifacts/${appId}/users/${userId}/config/main`;
+            const configRef = doc(db, configPath);
+            
+            console.log("Setting up real-time listener for:", configPath);
+
+            onSnapshot(configRef, (docSnap) => {
+                loadingIndicator.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    console.log("Real-time data received:", data);
+                    
+                    // 1. YouTube कंटेंट को अपडेट करना
+                    const newUrl = data.youtubeUrl || "https://www.youtube.com/embed/dQw4w9WgXcQ";
+                    youtubeIframe.src = getEmbedUrl(newUrl);
+
+                    // 2. कस्टम विज्ञापन (Modal) को अपडेट करना
+                    const title = data.adTitle || "हमारे नए YouTube वीडियो को प्रमोट किया गया!";
+                    const body = data.adBody || "यह Rewarded Ad Firestore से नियंत्रित है। अपनी वेबसाइट का लिंक जोड़ें।";
+                    const link = data.adLink || "#";
+
+                    adTitleElement.textContent = title;
+                    adBodyElement.textContent = body;
+                    adLinkElement.href = link;
+                    watchAdButton.textContent = "विज्ञापन देखें (30s)";
+
+                } else {
+                    console.warn("Config document does not exist. Using defaults.");
+                    adTitleElement.textContent = "डेटाबेस अभी सेट नहीं है";
+                    adBodyElement.textContent = "Firestore में 'youtubeUrl', 'adTitle', और 'adLink' फ़ील्ड्स सेट करें।";
+                    youtubeIframe.src = "https://www.youtube.com/embed/C0DPJD5g52I?autoplay=1&mute=1&controls=0";
+                }
+            }, (error) => {
+                console.error("Firestore Snapshot Error:", error);
+                loadingIndicator.textContent = `डेटा लोड करने में त्रुटि: ${error.message}`;
+            });
+        }
+
+        // ऐप को शुरू करना
+        initializeFirebase();
+    </script>
+</body>
+</html>
