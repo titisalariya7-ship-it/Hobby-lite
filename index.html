@@ -166,14 +166,31 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- ग्लोबल वैरिएबल (Canvas Environment से) ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // --- फायरबेस कॉन्फ़िगरेशन (GitHub Pages के लिए फिक्स) ---
 
-        let db;
-        let auth;
-        let userId = null;
+// 1. YOUR_CUSTOM_APP_ID: इसे 'for-x-you-v1' पर सेट करें, जिसका उपयोग Firestore में होगा।
+const YOUR_APP_ID = "for-x-you-v1"; 
+
+// 2. YOUR_FIREBASE_CONFIG: यहां आपको वह पूरा JSON ऑब्जेक्ट पेस्ट करना है जो आपने Firebase Console से कॉपी किया था।
+const YOUR_FIREBASE_CONFIG = {
+     apiKey: "AIzaSyCCQb2Bpmw6tIaFuzO...", // <--- अपना असली API Key
+     authDomain: "for-x-you.firebaseapp.com",
+     projectId: "for-x-you", 
+     storageBucket: "for-x-you.appspot.com",
+     messagingSenderId: "984407200677",
+     appId: "1:984407200677:web:53ad51..." 
+};
+
+// 3. GitHub पर ऑथ टोकन की ज़रूरत नहीं है।
+const YOUR_INITIAL_AUTH_TOKEN = null;
+
+// अब हम इन वैरिएबल्स का उपयोग करेंगे।
+let db;
+let auth;
+const appId = YOUR_APP_ID;
+const firebaseConfig = YOUR_FIREBASE_CONFIG;
+const initialAuthToken = YOUR_INITIAL_AUTH_TOKEN;
+// --- END OF CONFIGURATION FIX ---
 
         const loadingIndicator = document.getElementById('loading-indicator');
         const appContainer = document.getElementById('app-container');
