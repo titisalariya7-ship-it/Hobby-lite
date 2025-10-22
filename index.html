@@ -171,15 +171,27 @@
 // 1. YOUR_CUSTOM_APP_ID: इसे 'for-x-you-v1' पर सेट करें, जिसका उपयोग Firestore में होगा।
 const YOUR_APP_ID = "for-x-you-v1"; 
 
-// 2. YOUR_FIREBASE_CONFIG: यहां आपको वह पूरा JSON ऑब्जेक्ट पेस्ट करना है जो आपने Firebase Console से कॉपी किया था।
-const YOUR_FIREBASE_CONFIG = {
-     apiKey: "AIzaSyCCQb2Bpmw6tIaFuzO...", // <--- अपना असली API Key
-     authDomain: "for-x-you.firebaseapp.com",
-     projectId: "for-x-you", 
-     storageBucket: "for-x-you.appspot.com",
-     messagingSenderId: "984407200677",
-     appId: "1:984407200677:web:53ad51..." 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCcQb2Bpmw6tIaFuzOZ7pGnx76-Th7MtBw",
+  authDomain: "for-x-you.firebaseapp.com",
+  projectId: "for-x-you",
+  storageBucket: "for-x-you.firebasestorage.app",
+  messagingSenderId: "984407200677",
+  appId: "1:984407200677:web:53ad51a3cf078019854e4c",
+  measurementId: "G-ND2X9EBVL6"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // 3. GitHub पर ऑथ टोकन की ज़रूरत नहीं है।
 const YOUR_INITIAL_AUTH_TOKEN = null;
